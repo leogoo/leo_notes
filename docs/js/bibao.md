@@ -128,7 +128,6 @@ Function.prototype.partial = function () {
             this._values[key] = this.apply(this, arguments);// this为原函数
     };
 
-
     Function.prototype.memoize = function () {
         var fn = this;
         return function () {
