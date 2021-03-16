@@ -7,7 +7,6 @@
     - [js类与继承](js/instance)
     - [利用Event Bus实现组件通信](js/event)
     - [localStorage使用](js/localStorage)
-    - [手写promise](js/promise)
     - [js设计模式](js/pattern)
     - [小知识](js/index)
     - [es6之class](js/class)
@@ -38,10 +37,17 @@
     - [错误收集与上报](project/error)
 
 - 手写代码
-    <!-- - [promise](code/promise) -->
+    - [promise](code/promise)
     - [bind, apply, curry, new, instanceof](code/bind)
     - [map, reduce](code/map)
     - [debounce&throttle](code/debounce)
+    - [EventBus](code/event)
+
+- 算法与数据结构
+    - [贪心算法](algorithm/greedy)
+    - [双指针](algorithm/doublePointer)
+
+- 设计模式
 
 - 杂
     - [iframe的使用](point/iframe)

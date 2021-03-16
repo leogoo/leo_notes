@@ -4,6 +4,25 @@
 1. useEffect内的回调是组件初始化和每次重渲染都会执行
     - 第二个参数来决定是否执行里面的操作，传入一个空数组 [ ]，那么该 effect 只会在组件 mount 和 unmount 时期执行
     - 添加依赖后，会在组件 mount 和 unmount 以及didUpdate的时候执行
+    - useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect等里面的代码执行完后才更新视图，可以解决一些闪动问题
+
+    ```js
+    // 利用useEffect发送请求
+    const [data, setData] = useState();
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const result = await axios('https://');
+
+        setData(result.data);
+      };
+
+      fetchData();
+    }, []);
+
+    return null;
+    ```
+
 1. useState来修改state值会引起重渲染
     - 可以使用匿名函数(prevState) => {setState(prevState + 1)}
     - 取到的state值是组件渲染时的快照，可以利用ref来取到最新的值
@@ -17,7 +36,6 @@
             }, [props]);
         }
         ```
-1. useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect等里面的代码执行完后才更新视图，可以解决一些闪动问题
 
 ### useReducer
 官方有useReducer这个hook，也可以通过useState来实现。useReducer可以用来当做redux
