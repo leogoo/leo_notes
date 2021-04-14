@@ -58,7 +58,7 @@
                 }
             })
             ```
-        1. window.onerror会被覆盖，window.addEventListener('error')绑定多个回调则会一次执行
+        1. window.onerror会被覆盖，window.addEventListener('error')绑定多个回调则会依次执行
 1. React的componentDidCatch、getDerivedStateFromError
      ```js
      class ErrorBoundary extends React.Component {

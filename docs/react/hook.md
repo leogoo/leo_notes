@@ -5,6 +5,8 @@
     - 第二个参数来决定是否执行里面的操作，传入一个空数组 [ ]，那么该 effect 只会在组件 mount 和 unmount 时期执行
     - 添加依赖后，会在组件 mount 和 unmount 以及didUpdate的时候执行
     - useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect等里面的代码执行完后才更新视图，可以解决一些闪动问题
+        - useEffect执行顺序是 组件更新挂载完成 -> 浏览器dom 绘制完成 -> 执行useEffect回调。如果在useEffect重新请求数据，渲染视图过程中，肯定会造成画面闪动的效果
+        - useLayoutEffect执行顺序是 组件更新挂载完成 -> 执行useLayoutEffect回调-> 浏览器dom 绘制完成。useLayoutEffect回调函数的代码就会阻塞浏览器绘制，所以可定会引起画面卡顿等效果
 
     ```js
     // 利用useEffect发送请求

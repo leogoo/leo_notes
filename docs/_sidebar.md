@@ -32,7 +32,7 @@
     - [webpack loader和plugin](project/loader)
     - [前端模块化](project/module)
     - [Git](project/git)
-    - [babel基础系列](project/babel)
+    - [babel](project/babel)
     - [ts](project/ts)
     - [错误收集与上报](project/error)
 
@@ -46,6 +46,19 @@
 - 算法与数据结构
     - [贪心算法](algorithm/greedy)
     - [双指针](algorithm/doublePointer)
+    - [二分查找](algorithm/halfIntervalSearch)
+    - [排序算法](algorithm/sorting)
+    - [搜索](algorithm/search)
+    - [动态规划](algorithm/dynamicProgramming)
+    - [分治法](algorithm/divideAndConquer)
+    - [数学问题](algorithm/math)
+    - [位运算]()
+    - [妙用数据结构](algorithm/dataStructure)
+    - [字符串](algorithm/string)
+    - [链表]()
+    - [树]()
+    - [图]()
+
 
 - 设计模式
 
@@ -59,5 +72,12 @@
     - [前端路由](point/route)
     - [前端与http请求](point/http)
     - [promise并发数](point/promise)
+    - [本地mock]
+    - [html快照实现回退定位]()
+    - [ios图片加载优化]()
+    - [首屏内联打点]()
+    - [renderToString缓存]()
+    - [视频相关]()
+    - [微信字体设置问题](）
 
 - [CSS](/css/index)
