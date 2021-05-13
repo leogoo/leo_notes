@@ -12,10 +12,11 @@
             width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
-            // ios设备滑动
+            // ios设备弹性滑动
             -webkit-overflow-scrolling: touch;
             // 不换行
             white-space: nowrap;
+            scroll-behavior: smooth;
             // 隐藏滚动条，将滚动条推出可视区
             padding-bottom: .2rem;
             li {
@@ -31,3 +32,4 @@
 1. 利用getBoundingClientRect方法获取元素对应盒子的宽高和位置属性
 1. 安卓居中问题，可以设置字体font-family: PingFang SC, miui, system-ui, -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, sans-serif;
 1. 安卓机上经常出现头像不够圆的问题，可以针对安卓对图像放大3，4倍
+1. 同一个dom上加多个类，优先级是看scss文件哪个写在后面，不是className的顺序。同权重的样式，写在后面的会覆盖写在前面的样式

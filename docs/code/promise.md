@@ -140,3 +140,63 @@
             })
         }
         ```
+
+### Promise.all
+> Promise.allSettled()方法返回一个在所有给定的promise都已经fulfilled或rejected后的promise.Promise.all则是有一个rejected后立即结束返回
+```js
+function PromiseAll(arr) {
+    // 返回一个promise
+    return new Promise((resolve, reject) => {
+        const result = new Array(arr.length);
+        let count = 0;
+        for (let i = 0; i < arr.length; i++) {
+            const p = arr[i];
+            p.then(data => {
+                // 保存每个promise完成态的返回值
+                result[i] = data;
+                count++;
+                // count用于记次数，达成完成态的promise个数=promise个数则resolve
+                if (count === arr.length) {
+                    resolve(result);
+                }
+            }).catch(err => {
+                // 有个promise异常错误，则立即停止
+                console.log('err1', err);
+                reject(err);
+            })
+        }
+    });
+}
+```
+测试：
+```js
+const p1 = new Promise((resolve) => {
+    setTimeout(() => {
+        resolve(1111);
+    }, 1000);
+}).then(data => {
+    return 5555;
+})
+
+const p2 = new Promise((resolve) => {
+    setTimeout(() => {
+        resolve(2222);
+    }, 2000);
+});
+
+const p3 = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        reject(0000);
+    }, 3000);
+}).catch(err => {
+    // reject后，then里面取到的是undefined
+    console.log('err3', err);
+});
+
+PromiseAll([p1, p2, p3]).then((data) => {
+    console.log(data); // [5555, 2222, undefined]
+}).catch(err => {
+    console.log('err2', err);
+})
+
+```

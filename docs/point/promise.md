@@ -32,3 +32,27 @@
         }
     }
     ```
+
+1. Promise.race返回的是第一个达成完成态的那个promise
+    ```js
+    function limitLoad(urls, handler, limit) {
+        const sequence = [].concat(urls);
+        let promises = [];
+        promises = sequences.splice(0, limit).map((url, index) => {
+            return handler(url).then(() => {
+                return index;
+            })
+        });
+
+        let p = Promise.race(promises);
+        for(let i = 0; i < sequence.length; i++) {
+            p = p.then(res => {
+                // 直接替换完成的那个promise
+                promises[res] = handler(sequence[i]).then(() => {
+                    return res;
+                });
+                return Promise.race(promises);
+            })
+        }
+    }
+    ```

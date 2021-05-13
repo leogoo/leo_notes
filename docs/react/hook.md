@@ -1,12 +1,15 @@
 >Hooks 是一个 React 函数组件内一类特殊的函数（通常以 "use" 开头，比如 "useState"），使开发者能够在 function component 里使用 state 和 life-cycles，以及使用 custom hook 复用业务逻辑
 
+## 使用原则
+1. 不能用在循环语句、条件语句、嵌套函数，这是为了保证hook的顺序，原理是react是用链表还缓存hook数据。也不是说在hook前不能有if和三元语句，主要是不影响hook的顺序执行
+
 ### 最基本的两个hook是useState和useEffect
 1. useEffect内的回调是组件初始化和每次重渲染都会执行
     - 第二个参数来决定是否执行里面的操作，传入一个空数组 [ ]，那么该 effect 只会在组件 mount 和 unmount 时期执行
     - 添加依赖后，会在组件 mount 和 unmount 以及didUpdate的时候执行
     - useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect等里面的代码执行完后才更新视图，可以解决一些闪动问题
-        - useEffect执行顺序是 组件更新挂载完成 -> 浏览器dom 绘制完成 -> 执行useEffect回调。如果在useEffect重新请求数据，渲染视图过程中，肯定会造成画面闪动的效果
-        - useLayoutEffect执行顺序是 组件更新挂载完成 -> 执行useLayoutEffect回调-> 浏览器dom 绘制完成。useLayoutEffect回调函数的代码就会阻塞浏览器绘制，所以可定会引起画面卡顿等效果
+        - useEffect执行顺序是 组件更新挂载完成 -> 浏览器dom 绘制完成 -> 执行useEffect回调。useEffect是按照顺序执行代码的，当改变屏幕内容时可能会产生闪烁
+        - useLayoutEffect执行顺序是 组件更新挂载完成 -> 执行useLayoutEffect回调-> 浏览器dom 绘制完成。useLayoutEffect回调函数的代码就会阻塞浏览器绘制，需要避免做计算量较大的耗时任务从而造成阻塞
 
     ```js
     // 利用useEffect发送请求
@@ -212,3 +215,18 @@ function App() {
         return <MyChild ref={childRef} />;
     }
     ```
+1. 生成一个引用，重渲染也指向同一个地址
+```jsx
+function App() {
+  // 记录一个常量字面量对象，防止引起子组件的重渲染
+  const paramsRef = useRef({
+    a: 1
+  });
+
+  return (
+    <>
+      <Child params={paramsRef.current}>
+    </>
+  )
+}
+```

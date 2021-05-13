@@ -21,10 +21,10 @@ Babel的插件本质上就是一个个函数，在Babel对AST语法树进行转�
     const presets = [
         ["@babel/env", {
             targets: {
-            edge: "17",
-            firefox: "60",
-            chrome: "67",
-            safari: "11.1"
+                edge: "17",
+                firefox: "60",
+                chrome: "67",
+                safari: "11.1"
             },
             useBuiltIns: "usage"
         }]
@@ -58,9 +58,46 @@ Babel的插件本质上就是一个个函数，在Babel对AST语法树进行转�
         "build:env": "babel src -d dist --presets=@babel/env"
     }
     ```
+
+## polyfill
 1. polyfill与preset-env
     1. env preset只会为目标浏览器中没有的功能加载转换插件
     1. polyfill完整模拟ES2015+环境
+1. polyfill使用方式
+    1. module顶部手动引入@babel/polyfill
+    2. 配置babelrc 
+        ```js
+        {
+            "presets": [
+                ["@babel/preset-env", {
+                    "useBuiltIns": false
+                }]
+            ],
+        }
+        ```
+        同时webpack入口处配置
+        ```js
+        entry: {
+            app: ['@babel/polyfill', './main.js']
+        }
+        ```
+    3. 配置useBuiltIns为entry,在入口文件出手动引入@babel/polyfill
+        ```js
+        {
+            "preset": [
+                ["@babel/env", {
+                    'useBuiltIns': 'entry',
+                    'modules': false, // 不开启将 ES6 模块语法转换为其他模块语法
+                    'corejs': 2,
+                    "include": [], // 插件数组，这些插件总是被使用，即使不需要
+                    "exclude": [], // 插件数组，这些插件将不会被使用, 即使目标环境需要
+                }]
+            ]
+        }
+        ```
+    4. 配置useBuiltIns为usage实现按需加载，注意，这里按需加载是指每个module，也就是每个文件都会导入需要的polyfill
+1. 工程中可以用上面的第三种方法来引入@babel/polyfill，同时对配置exclude来最小化打包的体积
+1. 用@babel/plugin-transform-regenerator可以注入辅助函数，防止polyfill污染全局变量例如Promise、Set
 
 ## Babel 处理流程
 1. 编译器的三个过程

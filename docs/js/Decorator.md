@@ -58,6 +58,8 @@ function connect(mapStateToProps, mapDispatchToProps) {
 
 
 ### autobind
+[装饰器方法库core-decorators](https://github.com/jayphelps/core-decorators)
+
 ```js
 function autobind(...args) {
     // 作类装饰器

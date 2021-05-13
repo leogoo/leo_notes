@@ -95,3 +95,16 @@ const preloadImages = urls => {
     return Promise.all(urls.map(url => loadImage(url, RETRY_LIMIT, errorUrls, null)))
 }
 ```
+
+### 懒加载
+利用IntersectionObserver
+
+### webp
+WebP的优势在于它具有更优的图像数据压缩算法，在拥有肉眼无法识别差异的图像质量前提下，带来更小的图片体积，同时具备了无损和有损的压缩模式、Alpha透明以及动画的特性
+
+1. 判断是否支持webp
+```js
+    document.createElement('canvas')
+        .toDataURL('image/webp')
+        .indexOf('data:image/webp') == 0
+```
