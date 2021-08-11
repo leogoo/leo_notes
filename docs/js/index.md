@@ -86,7 +86,7 @@
     - 冻结对象是指那些不能添加新的属性，不能修改已有属性的值，不能删除已有属性，以及不能修改已有属性的可枚举性、可配置性、可写性的对象。也就是说，这个对象永远是不可变的
     - Object.freeze() 方法可以冻结一个对象
     - Object.isFrozen：判断对象是否是冻结对象（不可扩展，且属性为对象时也不可扩展）
-    ```
+    ```js
     var oneProp = { p: 42 };
     console.log(Object.isFrozen(oneProp)) // false
     Object.preventExtensions(oneProp);
@@ -96,24 +96,6 @@
     console.log(Object.isSealed(oneProp));// true
     console.log(Object.isFrozen(oneProp));// false， 属性p可写
     ```
-1. Array.from() 方法从一个类似数组或*可迭代对象*中创建一个新的数组实例
-    ```
-    console.log(Array.from([1, 2, 3], x => x + x));
-    // expected output: Array [2, 4, 6]
-    ```
-1. arr.concat()参数可是**序列化数值**，或者是数组
-    ```
-    let arr = [1, 2];
-    arr.concat(3, 4); //[1, 2, 3, 4]
-    arr.concat([3, 4]); //[1, 2, 3, 4]
-    arr.concat(3, [4]); //[1, 2, 3, 4]
-    ```
-1. slice(start, end)
-    - 没有end则选取start到结尾
-    - 参数为负数，表示从数组尾部开始
-    - slice(0)克隆数组
-
-1. arr.findIndex(callback(element, index, array), thisArg): 返回满足条件的第一个元素下标
 1. 防抖debounce：触发n秒后执行，以新的事件的时间为准，n 秒后才执行
 1. 节流throttle：持续触发事件，每隔n秒时间，只执行一次事件
 1. 类的内部所有定义的方法，都是不可枚举的， 所以不能用...展开class内的方法会
@@ -189,22 +171,6 @@
             return opts.isIntersecting && opts.intersectionRatio >= threshold;
         }
         ```
-1. Array.from用来生成数据
-    1. 第一个可以是数组
-    2. 第一个参数可以是类数组
-        ```js
-        const likeArr = {
-            length: 3,
-            '0': 1,
-            '1': 2,
-            '2': 3
-        };
-        Arrar.from(likeArr, (value, index) => {
-            console.log(value); // 1, 2, 3
-            console.log(index); // 0 , 1, 2
-            return value; 
-        }); // [1, 2, 3]
-        ```
 1. node中查看执行的调用栈console.trace();
 1. instanceof判断某对象是否为某构造器的实例。基于原型链的查询，只要处于原型链中，判断永远为true。
     1. instanceof的使用：a instanceof A, 就是判断`a.__proto__.__proto__`找下去能不能找到A.prototype
@@ -261,3 +227,68 @@
         obj[Symbol.toPrimitive] = () => 14;
         obj + 1; // 15
     ```
+
+### Map与Set
+Map对象的方法: clear, delete, entries, forEach, has, keys, size, values, get, set
+Set对象的方法: clear, delete, entries, forEach, has, size, values, add
+
+### 数组
+1. Array.from() 方法从一个类似数组或*可迭代对象*中创建一个新的数组实例
+    ```js
+    console.log(Array.from([1, 2, 3], x => x + x));
+    // expected output: Array [2, 4, 6]
+
+    const likeArr = {
+        length: 3,
+        '0': 1,
+        '1': 2,
+        '2': 3
+    };
+    Arrar.from(likeArr, (value, index) => {
+        console.log(value); // 1, 2, 3
+        console.log(index); // 0 , 1, 2
+        return value; 
+    }); // [1, 2, 3]
+    ```
+1. 创建数组比较简单的方式是`new Array(n).fill(0)`, 但是创建二维数组时会有问题，指向同一个数组
+    ```js
+    const arr1 = new Array(3).fill(new Array(3).fill(0));
+    arr1[0][0] = 1;
+
+    // arr1 结果是 [[1, 0, 0], [1, 0, 0], [1, 0, 0]]
+
+    const arr2 = Array(3).fill(0).map(() => Array(3).fill(0));
+    arr2[0][0] = 1;
+    // arr1 结果是 [[1, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+    ```
+1. [].concat()参数可是**序列化数值**，或者是数组
+    ```
+    let arr = [1, 2];
+    arr.concat(3, 4); //[1, 2, 3, 4]
+    arr.concat([3, 4]); //[1, 2, 3, 4]
+    arr.concat(3, [4]); //[1, 2, 3, 4]
+    ```
+1. [].slice(start, end)
+    - 没有end则选取start到结尾
+    - 参数为负数，表示从数组尾部开始
+    - slice(0)克隆数组
+1. arr.findIndex(callback(element, index, array), thisArg): 返回满足条件的第一个元素下标
+
+### 自定义事件CustomEvent
+```js
+// 监听
+document.body.addEventListener('test', (event) => {
+    console.log(event.payload);
+});
+
+let myEvent = new CustomEvent('test', {
+    payload: {
+        name: '',
+    }
+});
+// 手动触发
+document.body.dispatchEvent(myEvent);
+```
+
+1. transitionEnd事件会冒泡

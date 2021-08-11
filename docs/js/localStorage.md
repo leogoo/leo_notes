@@ -41,35 +41,35 @@ localStorage用于本地存储，比起cookies存储量十分可观。但是loca
 
 ## 时效
 localStorage本地存储是永久存储，就像是写入文件或数据库，但是可以通过js来实现过期清除
-    ```js
-    function setLocalStorage(key, value) {
-        try {
-            localStorage.setItem(key, JSON.string({
-                data: value, time: new Date().getTime()
-            }));
-        } catch (exception) {
-            // 容量超标了
-            if (exception.name === 'QuotaExceededError) {
-                // 这里是简单粗暴的清空了，应该找到最旧的那一个，然后再递归，发现如果还有exception，则继续删
-                localStorage.clear();
-                setLocalStorage(key, value);
-            }
+```js
+function setLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.string({
+            data: value, time: new Date().getTime()
+        }));
+    } catch (exception) {
+        // 容量超标了
+        if (exception.name === 'QuotaExceededError) {
+            // 这里是简单粗暴的清空了，应该找到最旧的那一个，然后再递归，发现如果还有exception，则继续删
+            localStorage.clear();
+            setLocalStorage(key, value);
         }
     }
-    function getLocalStorage(key, exp) {
-        exp = exp || 1000 * 86400; // 默认一天过期
-        var data = localStorage.getItem(key);
-        if (data) {
-            var obj = JSON.parse(data);
-            // 取数据时，需要判断该缓存数据是否过期，如果过期就删除
-            if (new Date().getTime() - obj.time < exp) {
-                return obj.data;
-            }
-            localStorage.removeItem(key);
+}
+function getLocalStorage(key, exp) {
+    exp = exp || 1000 * 86400; // 默认一天过期
+    var data = localStorage.getItem(key);
+    if (data) {
+        var obj = JSON.parse(data);
+        // 取数据时，需要判断该缓存数据是否过期，如果过期就删除
+        if (new Date().getTime() - obj.time < exp) {
+            return obj.data;
         }
-        return null;
+        localStorage.removeItem(key);
     }
-    ```
+    return null;
+}
+```
 
 ## 事件
 >当localStorage或者sessionStorage中存储的值发生变化时，就会触发storage事件。类似于click事件一样，其定义的方式也是一样，可以通过addEventListener来实现。

@@ -54,3 +54,19 @@ function throttle(func, wait) {
     }
 }
 ```
+
+利用时间戳实现, 与setTimeout区别是第一个触发可能就执行
+```js
+function throttle(func, delay) {
+    let previous = 0；
+    return function() {
+        const context = this;
+        const args = arguments;
+        const now = Date.now();
+        if (now - previous >= delay) {
+            func.apply(context, args);
+            previous = now;
+        }
+    }
+}
+```

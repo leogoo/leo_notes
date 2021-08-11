@@ -26,22 +26,22 @@ var c = [1, 2, 3]; // 变量c存在于栈中，[1, 2, 3] 作为对象存在于�
     - 微任务通常来说就是需要在当前 task 执行结束后立即执行的任务,这就是为啥promise中的代码会比setTimeout先执行
     - 如果在微任务执行期间微任务队列加入了新的微任务，会将新的微任务加入队列尾部，之后也会被执行
 
-```
-console.log('1');
+    ```js
+    console.log('1');
 
-setTimeout(function() {
-    console.log('setTimeout');
-}, 0);
+    setTimeout(function() {
+        console.log('setTimeout');
+    }, 0);
 
-Promise.resolve().then(function() {
-    console.log('promise1');
-}).then(function() {
-    console.log('promise2');
-});
-// console.log('2');
-// 1
-// 2
-// promise1
-// promise2
-// setTimeout
-```
+    Promise.resolve().then(function() {
+        console.log('promise1');
+    }).then(function() {
+        console.log('promise2');
+    });
+    console.log('2');
+    // 1
+    // 2
+    // promise1
+    // promise2
+    // setTimeout
+    ```

@@ -1,14 +1,12 @@
 - 深入js
+    - [小知识](js/index)
     - [闭包](js/bibao)
     - [函数](js/function)
     - [浅拷贝与深拷贝](js/clone)
     - [js内存机制](js/memory)
     - [js运行机制](js/run)
     - [js类与继承](js/instance)
-    - [利用Event Bus实现组件通信](js/event)
     - [localStorage使用](js/localStorage)
-    - [js设计模式](js/pattern)
-    - [小知识](js/index)
     - [es6之class](js/class)
     - [es6之Async](js/async)
     - [es6之proxy](js/proxy)
@@ -16,7 +14,6 @@
 
 - react
     - [react入门知识点](react/react)
-    - [react源码](react/yuanma)
     - [react中Context API](react/context)
     - [react提供的Hook Api](react/hook)
     - [react上的lodash——recompose](react/recompose)
@@ -30,12 +27,13 @@
     - [node使用](project/node)
     - [webpack基础](project/webpack)
     - [webpack loader和plugin](project/loader)
-    - [自定义webpack的loader和plugin]
     - [前端模块化](project/module)
     - [Git](project/git)
     - [babel](project/babel)
     - [ts](project/ts)
-    - [错误收集与上报](project/error)
+    - [错误收集与数据上报](project/error)
+    - [流式渲染](project/render)
+    - [首屏内联打点](project/inlineLog)
     - [杂](project/index)
 
 - 手写代码
@@ -46,10 +44,10 @@
     - [EventBus](code/event)
 
 - 算法与数据结构
+    - [排序算法](algorithm/sorting)
     - [贪心算法](algorithm/greedy)
     - [双指针](algorithm/doublePointer)
     - [二分查找](algorithm/halfIntervalSearch)
-    - [排序算法](algorithm/sorting)
     - [搜索](algorithm/search)
     - [动态规划](algorithm/dynamicProgramming)
     - [分治法](algorithm/divideAndConquer)
@@ -61,28 +59,22 @@
     - [树]()
     - [图]()
 
-
-- 设计模式
-
 - 杂
+    - [页面生命周期](point/html)
     - [iframe的使用](point/iframe)
     - [iframe与浏览器浏览记录](point/iframe2)
     - [IntersectionObserver](point/observer)
     - [node环境下文件路径问题](point/path)
     - [img标签与image对象](point/image)
+    - [图片加载优化](point/image2)
     - [跨域](point/access)
     - [前端路由](point/route)
     - [前端与http请求](point/http)
     - [promise并发数](point/promise)
-    - [虚拟列表]
     - [jsBridge]
     - [html快照实现回退定位](point/back)
-    - [图片加载优化](point/image2)
-    - [首屏内联打点]()
-    - [renderToString缓存]()
-    - [视频相关]()
-    - [微信字体设置问题]()
     - [LRU算法](point/lru)
+    - [虚拟列表优化](point/renderObserver)
     - [疑难杂症](point/index)
 
 - [CSS](/css/index)

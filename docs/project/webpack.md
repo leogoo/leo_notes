@@ -1,3 +1,71 @@
+### output
+1. 最基本的配置, chunkFilename是指没有加在entry,动态分出来的包
+    ```js
+    module.exports = {
+        output: {
+            path: path.resolve(__dirname, "build"),
+            filename: '[name].js',
+            chunkFilename: "[name].min.js",
+        }
+    }
+    ```
+1. output.libraryTarget: 编译导出的方式，可以设置commonjs和amd, umd。设置umd那么这个包可以通过commonjs和amd引入，也可以用script标签
+1. output.library: 输出一个库，被引入时的一个全局对象
+    ```js
+    module.exports = {
+        //...
+        output: {
+            library: 'MyLibrary',
+            libraryTarget: 'umd',
+        },
+    };
+
+    // 最终的输出结果为：
+    (function webpackUniversalModuleDefinition(root, factory) {
+        if (typeof exports === 'object' && typeof module === 'object')
+            module.exports = factory();
+        else if (typeof define === 'function' && define.amd) define([], factory);
+        else if (typeof exports === 'object') exports['MyLibrary'] = factory();
+        else root['MyLibrary'] = factory();
+    })(typeof self !== 'undefined' ? self : this, function () {
+        return _entry_return_;
+    });
+    ```
+
+### externals
+> externals配置选项提供了「从输出的 bundle 中排除依赖」的方法
+1. node端
+    ```js
+    const nodeExternals = require("webpack-node-externals");
+
+    module.exports = {
+        entry: "./index.js",
+        //为了不把nodejs内置模块打包进输出文件中，例如： fs net模块等；
+        target: "node",
+        //为了不把node_modeuls目录下的第三方模块打包进输出文件中
+        externals: [nodeExternals()],
+        output: {}
+    ```
+1. cdn引入依赖
+    ```js
+    module.exports = {
+        output: {
+            libraryTarget: "umd"
+        },
+        externals: {
+            jquery: 'jQuery',
+            lodash: {
+                commonjs: 'lodash',
+                amd: 'lodash',
+                root: '_' // 通过一个全局变量访问 library
+            },
+        },
+    }
+
+    // 引入
+    import $ from 'jquery';
+    ```
+
 ### sourceMap
 1. 源代码与打包后的文件映射关系
     ```js
@@ -74,8 +142,23 @@ module.export = merge(commonConfig, devConfig);
 > 依赖ES6的静态分析,在预编译时便确定要引入的模块。tree shaking只对es6模块生效。
 
 1. tree shaking会消除导入的模块中并不会被使用的export，export default会导出整个模块，因此tree shaking会失效。
-1. webpack生产环境
-1. babel默认是编译成commonJS模块，需要配置
+1. webpack生产环境默认开启
+    ```js
+    // ./webpack.config.js
+    module.exports = {
+        optimization: {
+            // 模块只导出被使用的成员
+            usedExports: true,
+            // 压缩输出结果,且去除未导出的
+            minimize: true,
+            // 尽可能合并每一个模块到一个函数中
+            concatenateModules: true,
+            // 是否识别第三方的
+            sideEffects: true,
+        }
+    }
+    ```
+1. babel默认是编译成commonJS模块，需要配置(新版不需要)
     ```js
     {
         "presets": [
@@ -107,7 +190,7 @@ module.export = merge(commonConfig, devConfig);
         ```
     1. lodash-webpack-plugin， 配置webpack
         ```js
-        plugins: [ new LodashModuleReplacementPlugin()]
+        plugins: [new LodashModuleReplacementPlugin()]
         ```
 
 ##### code splitting

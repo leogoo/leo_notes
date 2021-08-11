@@ -42,5 +42,24 @@ function renderClient(content, root) {
 应该直接使用createPortal
 ```js
 const Component = React.createPortal(<Comp />, document.body);
+```
 
+### 字号单位问题
+```js
+function calcSizeToPixel(size: number | string): number {
+    if (typeof size === 'number') {
+        return size || 0;
+    }
+    if (typeof size === 'string') {
+        return getPixelsOfOneRem() * Number(size || 0);
+    }
+}
+
+/**
+ * @description 计算1rem对应的px
+ */
+export function getPixelsOfOneRem() {
+    // 取得html中设置的字体大小
+    return parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
 ```

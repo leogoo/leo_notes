@@ -17,10 +17,14 @@
             // 不换行
             white-space: nowrap;
             scroll-behavior: smooth;
-            // 隐藏滚动条，将滚动条推出可视区
-            padding-bottom: .2rem;
             li {
                 display: inline-block;
+            }
+
+            // 隐藏滚动条，将滚动条推出可视区
+            // padding-bottom: .2rem;
+            &::-webkit-scrollbar {
+                display: none;
             }
         }
     }
@@ -33,3 +37,7 @@
 1. 安卓居中问题，可以设置字体font-family: PingFang SC, miui, system-ui, -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, sans-serif;
 1. 安卓机上经常出现头像不够圆的问题，可以针对安卓对图像放大3，4倍
 1. 同一个dom上加多个类，优先级是看scss文件哪个写在后面，不是className的顺序。同权重的样式，写在后面的会覆盖写在前面的样式
+
+### 绕圆心旋转，自身不转
+简单好理解的做法是搞两层div，外层绕圆心转，内层绕自身旋转且是反方向相同的角度。
+> transform-origin 用来设定旋转的圆心，需要注意的是，设置的应该是从元素自身位置的左上角的偏移，而不是自身中心的偏移量

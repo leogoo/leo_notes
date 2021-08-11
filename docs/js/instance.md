@@ -139,7 +139,7 @@
         ```
     1. super()只能用在子类的构造函数之中，用在其他地方就会报错
     1. super作为对象时，在普通方法中，指向父类的**原型对象(实例属性不能获得）**；在静态方法中，指向父类
-        ```
+        ```js
         class A {
             constructor() {
                 this.x = 2;// 实例属性
@@ -166,7 +166,7 @@
         b.x // undefined
         ```
     1. 在子类普通方法中通过super调用父类的方法时，方法内部的this指向当前的子类实例
-        ```
+        ```js
         class A {
             constructor() {
                 this.x = 1;
@@ -190,7 +190,7 @@
         b.m() // 2
         ```
     1. 对象总是继承其他对象的，所以可以在任意一个对象中，使用super关键字。
-        ```
+        ```js
         var obj = {
             toString() {
                 return "MyObject: " + super.toString();
@@ -204,7 +204,7 @@
     1. class作为构造函数的语法糖，同时有prototype和__proto__
         1. 子类的__proto__属性，表示构造函数的继承，总是指向父类
         1. 子类的prototype属性的__proto__属性，表示方法的继承，指向父类的prototype
-            ```
+            ```js
             class A {
             }
 

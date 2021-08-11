@@ -102,9 +102,12 @@ const preloadImages = urls => {
 ### webp
 WebP的优势在于它具有更优的图像数据压缩算法，在拥有肉眼无法识别差异的图像质量前提下，带来更小的图片体积，同时具备了无损和有损的压缩模式、Alpha透明以及动画的特性
 
-1. 判断是否支持webp
+##### 判断浏览器是否支持webp
+1. canvas的toDataURL方法
 ```js
     document.createElement('canvas')
         .toDataURL('image/webp')
         .indexOf('data:image/webp') == 0
 ```
+1. 用image对象加载一个webp图片，检查是否会报错
+1. 在服务端根据请求header信息判断浏览器是否支持webp，Request Headers里的Accept会有image/webp。检测后写入cookie

@@ -16,6 +16,7 @@
     // 设置白名单
     res.header("Access-Control-Allow-Origin", '*.baidu.com');
     ```
+1. option预检请求
 
 ### jsonp
 1. 前端,函数定义要在发请求之前

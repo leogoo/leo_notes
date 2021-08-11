@@ -2,35 +2,50 @@
 
 1. 主要方法其实就是同时发送几个请求，其中有请求完成状态后进行替换下一条请求，保证正在请求的数
     ```js
-    //promise并发限制
-    class PromisePool {
-        constructor(max, fns) {
-            this.pool = []; //并发池
-            this.maxCount = max;
-            this.requestList = fns;
+    class Scheduler {
+        constructor(limit) {
+            this.queue = [];
+            this.maxCount = limit;
+            this.runCounts = 0;
         }
-
-        start() {
-            for(let i = 0; i < this.max; i++) {
-                this.setTask(this.requestList.thift());
+        add(time, order) {
+            const promiseCreator = () => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        console.log(order);
+                        resolve();
+                    }, time);
+                });
+            };
+            this.queue.push(promiseCreator);
+        }
+        taskStart() {
+            for (let i = 0; i < this.maxCount; i++) {
+                this.request();
             }
-            const race = Promise.race(this.pool);
-            return this.run(race);
         }
-        run(race) {
-            race.then(() => {
-                this.setTask(this.requestList.thift());
-                return this.run(Promise.race(this.pool));
-            })
-        }
-        setTask(task) {
-            this.pool.push(task); //将该任务推入pool并发池中
-            task.then(() => {
-                //请求结束后将该Promise任务从并发池中移除
-                this.pool.splice(this.pool.indexOf(task), 1);
-            })
+        request() {
+            if (!this.queue || !this.queue.length || this.runCounts >= this.maxCount) {
+                return;
+            }
+            this.runCounts++;
+            this.queue
+                .shift()()
+                .then(() => {
+                    this.runCounts--;
+                    this.request();
+                });
         }
     }
+    const scheduler = new Scheduler(2);
+    const addTask = (time, order) => {
+    scheduler.add(time, order);
+    };
+    addTask(1000, "1");
+    addTask(500, "2");
+    addTask(300, "3");
+    addTask(400, "4");
+    scheduler.taskStart();
     ```
 
 1. Promise.race返回的是第一个达成完成态的那个promise
@@ -38,7 +53,7 @@
     function limitLoad(urls, handler, limit) {
         const sequence = [].concat(urls);
         let promises = [];
-        promises = sequences.splice(0, limit).map((url, index) => {
+        promises = sequence.splice(0, limit).map((url, index) => {
             return handler(url).then(() => {
                 return index;
             })

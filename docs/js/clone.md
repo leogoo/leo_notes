@@ -4,7 +4,7 @@
 实现浅拷贝的方法很多：slice, concat, Array.from, Object.assign(), 
 1. 浅拷贝：
     - Object.assign(target, ...sources)
-        ```
+        ```js
         let a = {
             name: '1'
         };
@@ -16,7 +16,7 @@
         ```
     - 扩展符：b = {...obj}
     - Array.protptype.slice
-        ```
+        ```js
         var arr1 = [1, 2];
         var arr2 = arr1.slice();
         arr1[0] = 3;
@@ -26,7 +26,7 @@
     - Array.from()
 1. 深拷贝
     - JSON.parse(JSON.stringify(obj))
-        ```
+        ```js
         var obj1 = {
             x: 1, 
             y: {
@@ -44,18 +44,22 @@
         使用JSON.parse(JSON.stringify(obj))局限性：undefined、任意的函数以及 symbol 值，在序列化过程中会被忽略（出现在非数组对象的属性值中时）或者被转换成 null（出现在数组中时）
 
     - 递归拷贝
-        ```
-        const deepClone = obj => {
-            let clone = Object.assign({}, obj);
-            Object.keys(clone).forEach(
-                key => (clone[key] = typeof obj[key] === 'object' ? deepClone(obj[key]) : obj[key])
-            );
-            return Array.isArray(obj) && obj.length
-                // 利用Array.from生成数组
-                ? (clone.length = obj.length) && Array.from(clone)
-                // 空数组
-                : Array.isArray(obj)
-                    ? Array.from(obj)
-                    : clone;
+        ```js
+        const deepClone = function (obj, hash = new WeakMap()) {
+            if (obj.constructor === Date) 
+                return new Date(obj)       // 日期对象直接返回一个新的日期对象
+            if (obj.constructor === RegExp)
+                return new RegExp(obj)     //正则对象直接返回一个新的正则对象
+            //如果循环引用了就用 weakMap 来解决
+            if (hash.has(obj)) return hash.get(obj)
+            let allDesc = Object.getOwnPropertyDescriptors(obj);
+            //继承原型链
+            let cloneObj = Object.create(Object.getPrototypeOf(obj), allDesc);
+            //遍历传入参数所有键的特性
+            for (let key of Reflect.ownKeys(obj)) { 
+                cloneObj[key] = (isComplexDataType(obj[key]) && typeof obj[key] !== 'function') ? deepClone(obj[key], hash) : obj[key]
+            }
+            hash.set(obj, cloneObj)
+            return cloneObj
         }
         ```

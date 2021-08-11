@@ -76,7 +76,7 @@ react作为view层，一般不会操作dom，而是通过状态的改变来实�
         let state = initialState;
         // 当前订阅的listeners
         let listeners = [];
-        // getstate用于获取当前的state
+        // getState用于获取当前的state
         const getState = () => state;
         // dispatch一个action，调用reducer生成一个新的state
         const dispatch = (action) => {
@@ -84,12 +84,12 @@ react作为view层，一般不会操作dom，而是通过状态的改变来实�
             listeners.forEach(l => l());
         };
 
-        // sunscribe用于订阅一个listener
+        // subscribe用于订阅一个listener
         // 返回一个函数，用于取消该listener订阅的unsubscribe函数
         const subscribe = (listener) => {
             listeners.push(listener);
             return () => {
-                listeners = listeners.fileter(l => l !== listener)
+                listeners = listeners.filter(l => l !== listener)
             }
         };
 

@@ -3,13 +3,57 @@
 ## 使用原则
 1. 不能用在循环语句、条件语句、嵌套函数，这是为了保证hook的顺序，原理是react是用链表还缓存hook数据。也不是说在hook前不能有if和三元语句，主要是不影响hook的顺序执行
 
-### 最基本的两个hook是useState和useEffect
+### useState
+> useState来修改state值会引起重渲染
+
+1. 可以使用匿名函数
+      ```js
+      setState(prevState => {
+        return prevState + 1;
+      });
+      ```
+1. 取到的state值是组件渲染时的快照，可以利用ref来取到最新的值
+1. 在组件初始时进行赋值后即切断和props的联系，可用useEffect更新对props的依赖
+  ```js
+  function Test(props) {
+      const [count, setCount] = useState(props.num);
+      
+      useEffect(() => {
+          setCount(props.num);
+      }, [props]);
+  }
+  ```
+1. initialState参数只会在组件的初始化渲染中起作用，后续重新渲染时不会处理。如果初始值是引用类型，引用的地址不变时不会触发重渲染
+1. 类组件中setState永远会引起重渲染，要结合shouldComponentUpdate，函数式组件的hook中dispatch如果传入的值不变则不会重渲染
+1. 和类组件中setState类似,在事件绑定中操作state的时候，setState更新就是异步的。如果新的state需要通过使用先前的state计算得出，那么就要使用函数式更新，否则state可能还没有更新
+    ```js
+    function App() {
+      const [count, setCount] = useState(0);
+      return (
+        <div
+          onClick={() => {
+            // 点击一次，结果+3
+            // setCount((c) => c + 1);
+            // setCount((c) => c + 1);
+            // setCount((c) => c + 1);
+
+            // 点击一次，结果+1
+            setCount(count + 1);
+            setCount(count + 1);
+            setCount(count + 1);
+          }}
+        />
+      );
+    }
+    ```
+
+### useEffect
 1. useEffect内的回调是组件初始化和每次重渲染都会执行
     - 第二个参数来决定是否执行里面的操作，传入一个空数组 [ ]，那么该 effect 只会在组件 mount 和 unmount 时期执行
     - 添加依赖后，会在组件 mount 和 unmount 以及didUpdate的时候执行
-    - useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect等里面的代码执行完后才更新视图，可以解决一些闪动问题
+    - useLayoutEffect和useEffect功能基本重合，但是useLayoutEffect总是比useEffect先执行，useLayoutEffect等回调执行完后才更新视图，可以解决一些闪动问题
         - useEffect执行顺序是 组件更新挂载完成 -> 浏览器dom 绘制完成 -> 执行useEffect回调。useEffect是按照顺序执行代码的，当改变屏幕内容时可能会产生闪烁
-        - useLayoutEffect执行顺序是 组件更新挂载完成 -> 执行useLayoutEffect回调-> 浏览器dom 绘制完成。useLayoutEffect回调函数的代码就会阻塞浏览器绘制，需要避免做计算量较大的耗时任务从而造成阻塞
+        - useLayoutEffect执行顺序是 组件更新挂载完成 -> 执行useLayoutEffect回调-> 浏览器dom 绘制完成。useLayoutEffect在所有的DOM变更之后同步调用effect，回调函数的代码就会阻塞浏览器绘制，需要避免做计算量较大的耗时任务从而造成阻塞
 
     ```js
     // 利用useEffect发送请求
@@ -27,21 +71,6 @@
 
     return null;
     ```
-
-1. useState来修改state值会引起重渲染
-    - 可以使用匿名函数(prevState) => {setState(prevState + 1)}
-    - 取到的state值是组件渲染时的快照，可以利用ref来取到最新的值
-    - 在组件初始时进行赋值后即切断和props的联系，可用useEffect更新对props的依赖
-        ```js
-        function Test(props) {
-            const [count, setCount] = useState(props.num);
-            
-            useEffect(() => {
-                setCount(props.num);
-            }, [props]);
-        }
-        ```
-
 ### useReducer
 官方有useReducer这个hook，也可以通过useState来实现。useReducer可以用来当做redux
 ```js
@@ -138,7 +167,7 @@ function App() {
 ```
 
 ### useMemo 记忆组件
-useMemo会执行函数并返回结果
+1. useMemo会执行函数并返回结果
 ```js
 function App() {
   const [num, setNum] = useState(0);
@@ -162,6 +191,18 @@ function App() {
     </div>
   );
 }
+```
+1. React.memo 仅检查props变更。如果函数组件被React.memo包裹，且其实现中拥有useState，useReducer或useContext的 Hook，当context发生变化时，它仍会重新渲染
+```js
+function Banner() {
+    let appContext = useContext(AppContext);
+    let theme = appContext.theme;
+    // 这里不加useMemo，如果context有变化，Slider组件会重渲染
+    return React.useMemo(() => {
+        return <Slider theme={theme} />;
+    }, [theme])
+}
+export default React.memo(Banner)
 ```
 
 ### useRef

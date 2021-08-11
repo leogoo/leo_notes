@@ -96,3 +96,62 @@
         navigator.sendBeacon("/log", data)
     }
     ```
+
+### 性能指标
+|字段|指标|计算方式|备注|
+|----|----|-----|-----|
+||首字节| responseStart - navigationStart||
+||样式加载开始| resource.styleStart - navigationStart||
+||脚本加载开始| resource.scriptStart - navigationStart||
+||样式加载结束| resource.styleEnd - navigationStart||
+|fpt（First Paint Time）|白屏| responseEnd - navigationStart|从请求开始到浏览器开始解析第一批 HTML 文档字节的时间差|
+||首屏(无图)| fsn - navigationStart||
+||首屏| fs - navigationStart||
+||首次绘制| fpc - navigationStart||
+||首次内容绘制| fcp - navigationStart||
+||脚本加载结束| scriptEnd - navigationStart||
+|ready|HTML 加载完成时间| domContentLoadedEventEnd - navigationStart|domContentLoadedEventEnd可以用DOMContentLoaded时间记录的时间点|
+||总加载| ld - navigationStart||
+||样式加载耗时| resource.styleEnd - resource.styleStart||
+||脚本加载耗时| resource.scriptEnd - resource.scriptStart||
+|tti（Time to Interact）|首次可交互时间| domInteractive - navigationStart||
+||请求动画帧| fraf - navigationStart||
+
+1. 计算各类资源的加载耗时
+    ```js
+    const resourceAry = window.performance.getEntriesByType('resource');
+    // js资源
+    const allScript = slice.apply(document.querySelectorAll('script')).filter(script => script.src);
+    const script = resourceAry.filter(item => {
+        if (['script', 'link'].includes(item.initiatorType) && item.name.endsWith('.js')) {
+            const dom = allScript.find(script => script.src === item.name);
+            return dom && !dom.async; // 排除异步script
+        }
+        return false;
+    });
+    // css资源
+    const style = resourceAry.filter(item => item.initiatorType === 'link' && item.name.endsWith('.css'));
+
+    const calc = (ary, type, key) => {
+        return ary.length && ary.reduce((pre, current) => Math[type](pre, current[key]), ary[0][key]) || 0) + navigationStart;
+    };
+    const calcMin = (ary, key) => calc(ary, 'min', key); // 取相同类型的资源中最小的时间
+    const calcMax = (ary, key) => calc(ary, 'max', key); // 取相同类型的资源中最大的时间
+    resource = {
+        scriptStart: calcMin(script, 'fetchStart'),
+        scriptEnd: calcMax(script, 'responseEnd'),
+        styleStart: calcMin(style, 'fetchStart'),
+        styleEnd: calcMax(style, 'responseEnd')
+    };
+    ```
+1. DOMContentLoaded和load
+    - 当DOMContentLoaded 事件触发时，仅当DOM加载完成，不包括样式表，图片，flash
+    - 当onload事件触发时，页面上所有的DOM，样式表，脚本，图片，flash都已经加载完成了
+1. performance.timing
+    - domLoading: 开始解析dom树的时间，document.readyState === 'loading'
+    - domInteractive:  完成解析dom树，document.readyState === 'interactive'， 还没开始加载资源
+    - domContentLoadedEventStart: 开始加载页面内资源，DOMContentLoaded触发前的时间
+    - domContentLoadedEventEnd: 资源加载完成的时间，如js脚本加载执行完成
+    - domComplete: document.readyState === 'complete'
+    - loadEventStart: load事件回调执行前的时间
+    - loadEventEnd: load回调执行结束的时间

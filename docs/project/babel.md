@@ -65,7 +65,7 @@ Babel的插件本质上就是一个个函数，在Babel对AST语法树进行转�
     1. polyfill完整模拟ES2015+环境
 1. polyfill使用方式
     1. module顶部手动引入@babel/polyfill
-    2. 配置babelrc 
+    2. 配置babelrc, useBuiltIns为false，无视配置的浏览器内容，引入所有polyfill
         ```js
         {
             "presets": [
@@ -97,6 +97,30 @@ Babel的插件本质上就是一个个函数，在Babel对AST语法树进行转�
         ```
     4. 配置useBuiltIns为usage实现按需加载，注意，这里按需加载是指每个module，也就是每个文件都会导入需要的polyfill
 1. 工程中可以用上面的第三种方法来引入@babel/polyfill，同时对配置exclude来最小化打包的体积
+    手动在入口文件引入polyfill
+    ```js
+    const loaderUtils = require('loader-utils');
+
+    module.exports = function BabelPolyFillLoader (source) {
+        this.cacheable && this.cacheable();
+        const callback = this.async();
+        const options = loaderUtils.getOptions(this);
+        if (options.exclude && !Array.isArray(options.exclude)) {
+            throw new Error('exclude should be a Array');
+        }
+        for (const key in options.entry) {
+            const entrypath = options.entry[key][0];
+            if (entrypath === this.resourcePath && options.exclude.indexOf(key) === -1) {
+                if (source.indexOf('@babel/polyfill') === -1) {
+                    source = "import '@babel/polyfill';\n" + source;
+                }
+                break;
+            }
+        }
+
+        callback(null, source);
+    };
+    ```
 1. 用@babel/plugin-transform-regenerator可以注入辅助函数，防止polyfill污染全局变量例如Promise、Set
 
 ## Babel 处理流程

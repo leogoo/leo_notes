@@ -1,5 +1,4 @@
 ### 接口
-
 1. 函数类型
 
    ```ts
@@ -12,9 +11,7 @@
      
    }
    ```
-
 2. 继承接口
-
    ```ts
    interface Shape {
        color: string;
@@ -28,9 +25,7 @@
    square.color = "blue";
    square.sideLength = 10;
    ```
-
 3. 接口继承类, 只有子类能够使用接口
-
    ```ts
    class Control {
        private state: any;
@@ -46,9 +41,7 @@
    ```
 
 ### extends 条件类型
-
 1. 简单类型匹配
-
    ```ts
    type isNum<T> = T extends number ? number : string
    
@@ -56,23 +49,17 @@
    type Str = InstanceVal<'1'> // string;
    
    ```
-
 2. 判断联合类型， 联合类型A的所有子类型，在联合类型B中共都存在
-
    ```ts
    type A = 'x';
    type B = 'x' | 'y';
-   
    type Y = A extends B ? true : false; // true
    ```
-
 3. 推迟解析条件类型
-
    ```ts
    type AB<T> = T extends 'x' ? 'a' : 'b';
    type All = AB<'x' | 'y'>; // 非确定条件，可能是 'x' 或 'y'
    // 得到 type All = 'a' | 'b';
-   
    
    type Other = "a" | "b";
    type Merge<T> = T extends "x" ? T : Other; // T 等于匹配的类型，然后加上 Other 联合类型一起返回
@@ -89,7 +76,6 @@
 
 ### infer
 > infer在extends的条件语句中推断待推断的类型
-
 1. 获取数组里的元素类型
    ```ts
    type Ids = number[];
@@ -108,17 +94,15 @@
    ```
 
 2. 获取一个`Promise<xxx>`类型中的`xxx`类型
-
    > Promise的泛型T代表promise变成成功态之后resolve的值，resolve(value)
 
-   ```
+   ```js
    type Response = Promise<number[]>
    type Unpacked<T> = T extends Promise<infer R> ? R : T;
    type resType = Unpacked<Response>; // number[]
    ```
 
 3. @type/react中的useReducer获取reducer中的状态类型
-
    ```ts
    // R限制为Reducer类型
    // 通过传入的R类型即reducer函数类型获取第一个参数的类型
@@ -133,3 +117,33 @@
    ): [ReducerState<R>, Dispatch<ReducerAction<R>>];
    ```
 
+
+
+### 高级用法
+##### Pick
+1. Pick
+   ```ts
+   interface Test {
+      a: string;
+      b: (arg: number) => number;
+   }
+   type Pick<T, K extends keyof T> = {
+      [P in K]: T[P];
+   };
+   type B = Pick<Test, 'b'>;
+   // type B = {
+   //    b: (arg: number) => number;
+   // }
+   ```
+1. 取所有属性
+ ```ts
+   interface Test {
+      a: string;
+      b: (arg: number) => number;
+   }
+   type PickKeys<T> = {
+      [K in keyof T]: T[K] extends Function ? K : never;
+   }[keyof T];
+   type B = PickKeys<Test>;
+   // type B = "b"
+   ```

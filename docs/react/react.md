@@ -196,6 +196,7 @@
     6. selected：<option>中使用表示选择组件
     7. style：接受js对象而不是字符串
     8. value
+- 组件didmount里有取不到dom的情况，这是因为组件渲染就会执行了didmount，但是render里却有一些数据判断导致真实渲染的逻辑延后执行了。在useEffect就不会出现这种情况，会执行update
 
 ### 安全问题
 1. react会默认转义（escape）jsx中的文本，防止xss攻击。如果想要渲染出html则需要使用dangerouslySetInnerHTML

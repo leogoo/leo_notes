@@ -17,8 +17,8 @@ function connect(mapStateToProps, mapDispatchToProps) {
 1. 装饰器函数有三个参数: 类的原型，属性名，属性的描述对象，返回descriptor对象
     ```js
     class Person {
-    @readonly
-    name() { return `${this.first} ${this.last}` }
+        @readonly
+        name() { return `${this.first} ${this.last}` }
     }
 
     function readonly(target, name, descriptor){
@@ -70,16 +70,8 @@ function autobind(...args) {
 }
 
 function boundClass(target) {
-    let keys;
     // 获得类属性
-    if (typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function') {
-        keys = Reflect.ownKeys(target.prototype);
-    } else {
-        keys = Object.getOwnPropertyNames(targets.prototype);
-        if (typeof Object.getOwnPropertySymbols === 'function') {
-            keys = keys.concat(Object.getOwnPropertySymbols(target.prototype));
-        }
-    }
+    const keys = Reflect.ownKeys(target.prototype);
 
     keys.forEach(key => {
         if (key === 'constructor') {

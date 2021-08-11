@@ -54,18 +54,19 @@
         then(onFulfilled, onRejected) {
             const self = this;
             const {status, value, reason, fulfilledQueues, rejectedQueues} = self;
-            return new Promise((reslove, reject) => {
+            // 返回一个新的promise
+            return new Promise((resolve, reject) => {
                 let fulfilledHandle = value => {
                     try {
                         if (isFunction(onFulfilled)) {
                             const result = onFulfilled(value);
                             // 如果当前回调函数返回值为promise实例，需要等待其状态变化后再执行下一个回调
                             if (isPromise(result)) {
-                                // 同步reslut的状态
+                                // then里返回的是promise，则等完成后再将新promise同步对应的状态
                                 result.then(resolve, reject);
                             } else {
-                                // 执行下一个then的回调
-                                reslove(result);
+                                // 返回简单值则直接resolve新的promise，执行下一个then的回调
+                                resolve(result);
                             }
                         }
                     } catch (err) {
@@ -116,7 +117,7 @@
     }
     ```
 1. 注意点
-    1. 状态只能由 pending 转到 fulfilled 或 rejected 状态，且状态不能再改变
+    1. 状态只能由 pending 转到 fulfilled 或 rejected 状态，同一个promise状态不能再改变
     1. then返回一个新的promise，用于链式调用，为什么不直接返回this
         ```js
         // 如果返回的是this，promise2 === promise1
@@ -125,24 +126,41 @@
             return Promise.reject(3)
         });
         ```
-    1. then中返回新的promise实例,then的onFulfilled方法如果没有返回值，`resolve(undefined)`,生成的promise实例也没有value值，后续的then方法正常执行
-        ```js
-        if (self.status === FULFILLED) {
-            return bridgePromise = new MyPromise((resolve, reject) => {
-                try {
-                    // 状态变为成功，会有相应的 self.value
-                    let x = onFulfilled(self.value);
-                    // 暂时可以理解为 resolve(x)，后面具体实现中有拆解的过程
-                    resolvePromise(bridgePromise, x, resolve, reject);
-                } catch (e) {
-                    reject(e);
-                }
-            })
+
+### Promise.resolve和Promise.reject
+1. Promise.reject比较简单
+    ```js
+    Promise.reject = function (value){
+        return new Promise(function(resolve, reject) {
+            reject(value);
+        });
+    }
+    ```
+1. Promise.resolve参数可能有
+    - 无参数 
+    - 普通数据对象
+    - 一个Promise实例
+    - 一个thenable对象(thenable对象指的是具有then方法的对象) 
+    ```js
+    static resolve(value) {
+        if (value instanceof Promise) {
+            // 如果是Promise实例，直接返回
+            return value;
+        } else if (value && typeof value === 'object' && typeof value.then === 'function'){
+            let then = value.then;
+            // 有then但是不是promise时，直接执行resolve
+            return new Promise(resolve => {
+                then(resolve);
+            });
+        } else {
+            // 如果不是Promise实例，返回一个新的Promise对象，状态为FULFILLED
+            return new Promise((resolve, reject) => resolve(value));
         }
-        ```
+    }
+    ```
 
 ### Promise.all
-> Promise.allSettled()方法返回一个在所有给定的promise都已经fulfilled或rejected后的promise.Promise.all则是有一个rejected后立即结束返回
+> Promise.all有一个rejected后立即结束返回，或者是所有promise都fulfilled状态
 ```js
 function PromiseAll(arr) {
     // 返回一个promise
@@ -198,5 +216,53 @@ PromiseAll([p1, p2, p3]).then((data) => {
 }).catch(err => {
     console.log('err2', err);
 })
-
 ```
+
+### Promise.allSettled
+> Promise.allSettled()方法返回一个在所有给定的promise都已经fulfilled或rejected后的promise。
+
+1. promise.all的缺陷是，有异常的情况下，其他的promise结果捕获不到了
+    ```js
+    const promises = [
+        delay(100).then(() => 1),
+        delay(200).then(() => 2),
+        Promise.reject(3)
+    ];
+
+    Promise.all(promises).then(values => console.log(values))
+    // 最终输出： Uncaught (in promise) 3
+
+    // 加入catch语句后，最终输出：3
+    Promise.all(promises)
+        .then(values=>console.log(values))
+        .catch(err=>console.log(err))
+    ```
+1. Promise.allSettled()方法不论promise的最终状态，都会返回
+    ```js
+    
+    const promises = [
+        Promise.resolve(2),
+        Promise.reject(3)
+    ];
+
+    Promise.allSettled(promises)
+        .then(values => console.log(values));
+
+    // 输出
+    // [
+    //     { status: 'fulfilled', value: 2 },
+    //     { status: 'rejected', reason: 3 }
+    // ]
+    ```
+1. 源码
+    ```js
+    Promise.allSettled = function (promises) {
+        return Promise.all(promises.map(function (promise) {
+            return promise.then(function (value) {
+                return { state: 'fulfilled', value: value };
+            }).catch(function (reason) {
+                return { state: 'rejected', reason: reason };
+            });
+        }));
+    };
+    ```

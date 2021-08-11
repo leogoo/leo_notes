@@ -35,34 +35,36 @@ xhr.send('page=5&pageSize=20');
 ### Content-Type
 1. application/x-www-form-urlencoded
 一种最常用的一种请求编码方式，支持GET/POST等方法，特点是：所有的数据变成键值对的形式key1=value1&key2=value2的形式，并且特殊字符需要转义成utf-8编号，如空格会变成%20。最终发送的内容转为字符串
-```js
-let xhr = new XMLHttpRequest();
-xhr.open('POST', '/add');
-xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-xhr.send({id:5, name:'tom'});
-```
-<img src='../img/http/http1.webp'>
+    ```js
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/add');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send({id:5, name:'tom'});
+    ```
+    <img src='../img/http/http1.webp'>
+    <br>
+
 1. application/json
 要求格式为json。如果请求数据结构比较简单应该是使用常用的urlencoded比较有利，而比较复杂时使用json比较有利。通常来说比较常用的还是urlencoded
-```js
-let xhr = new XMLHttpRequest();
-xhr.open("POST", "/add");
-xhr.setRequestHeader("Content-type", "application/json");
-let data = {id:5, name: "yin"};
-xhr.send(JSON.stringify(data));
-```
+    ```js
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/add");
+    xhr.setRequestHeader("Content-type", "application/json");
+    let data = {id:5, name: "yin"};
+    xhr.send(JSON.stringify(data));
+    ```
 
 1. multipart/form-data
 它通常用于上传文件，上传文件必须要使用这种格式
-```js
-let formData = new FormData();
-formData.append("id", 5); // 数字5会被立即转换成字符串 "5"
-formData.append("name", "#yin");
-formData.append("file", input.files[0]);// 上传文件
-let xhr = new XMLHttpRequest();
-xhr.open("POST", "/add");
-xhr.send(formData);
-```
+    ```js
+    let formData = new FormData();
+    formData.append("id", 5); // 数字5会被立即转换成字符串 "5"
+    formData.append("name", "#yin");
+    formData.append("file", input.files[0]);// 上传文件
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/add");
+    xhr.send(formData);
+    ```
 
 ### 浏览器发送GET和js发送get请求
 <img src='../img/http/http2.webp'>
